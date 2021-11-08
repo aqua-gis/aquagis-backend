@@ -49,6 +49,8 @@ class SessionsController < ApplicationController
   ##
   # handle password authentication
   def password_authentication(username, password)
+    Keycloak::Client.get_token(username, password)
+
     if (user = User.authenticate(:username => username, :password => password))
       successful_login(user)
     elsif (user = User.authenticate(:username => username, :password => password, :pending => true))

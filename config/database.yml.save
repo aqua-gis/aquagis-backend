@@ -4,9 +4,9 @@
 development:
   adapter: postgresql
   database: openstreetmap
-  username: geonode1
-  password: geonode1
-#  host: localhost
+  username: openstreetmap
+  password: openstreetmap
+#geonode  host: localhost
   encoding: utf8
 
 # Warning: The database defined as 'test' will be erased and
@@ -15,15 +15,15 @@ development:
 test:
   adapter: postgresql
   database: osm_test
-  username: geonode1
-  password: geonode1
+  username: osm_test
+  password: osm_test
 #  host: localhost
   encoding: utf8
 
 production:
   adapter: postgresql
   database: osm
-  username: geonode1
-  password: geonode1
+  username: osm
+  password: osm
 #  host: localhost
   encoding: utf8

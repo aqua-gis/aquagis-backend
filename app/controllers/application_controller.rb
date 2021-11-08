@@ -3,14 +3,15 @@ class ApplicationController < ActionController::Base
 
   include SessionPersistence
 
-  protect_from_forgery :with => :exception
+  #protect_from_forgery :with => :exception
 
   add_flash_types :warning, :error
 
   rescue_from CanCan::AccessDenied, :with => :deny_access
   check_authorization
 
-  before_action :fetch_body
+  #before_action :fetch_body
+  before_action :user_signed_in?
   around_action :better_errors_allow_inline, :if => proc { Rails.env.development? }
 
   attr_accessor :current_user, :oauth_token
@@ -19,7 +20,32 @@ class ApplicationController < ActionController::Base
   helper_method :oauth_token
   helper_method :preferred_langauges
 
+  protect_from_forgery with: :exception
+  
+
+
+  def initialize
+    Keycloak.proc_cookie_token = lambda do
+      cookies.permanent[:keycloak_token]
+    end
+
+    super
+  end
+
+  def user_signed_in?
+    access = Keycloak::Client.user_signed_in? || keycloak_controller? || new_use?
+    redirect_to login_path unless access
+  end
+
   private
+
+  def keycloak_controller?
+    Keycloak.keycloak_controller == controller_name
+  end
+
+  def new_use?
+    controller_name == 'users' && (action_name == "new" || action_name == "create")
+  end
 
   def authorize_web
     if session[:user]
