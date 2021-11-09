@@ -33,7 +33,6 @@ class ApplicationController < ActionController::Base
   end
 
   def user_signed_in?
-    #access = Keycloak::Client.user_signed_in? || keycloak_controller? || new_use?
     access = Keycloak::Client.user_signed_in?('', '', '', "https://keycloak.aquagis.bg/auth/realms/master/protocol/openid-connect/token/introspect") || keycloak_controller? || new_use?
     redirect_to login_path unless access
   end
@@ -52,7 +51,11 @@ class ApplicationController < ActionController::Base
 
     access = Keycloak::Client.user_signed_in?('', '', '', "https://keycloak.aquagis.bg/auth/realms/master/protocol/openid-connect/token/introspect") || keycloak_controller? || new_use?
     redirect_to login_path unless access
-
+    if access
+      self.current_user = User.new()
+      self.current_user.id = 10
+      self.current_user.display_name = "ivan"
+    end
     #access = Keycloak::Client.user_signed_in? || keycloak_controller? || new_use?
     #access = Keycloak::Client.user_signed_in?('', '', '', "introspection_endpoint") || keycloak_controller? || new_use?
     #redirect_to login_path unless access
