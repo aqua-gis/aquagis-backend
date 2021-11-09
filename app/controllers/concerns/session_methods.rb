@@ -41,8 +41,8 @@ module SessionMethods
   # process a successful login
   def successful_login(user, referer = nil)
     session[:user] = user.id
-    session[:fingerprint] = user.fingerprint
-    session_expires_after 28.days if session[:remember_me]
+    #session[:fingerprint] = user.fingerprint
+    #session_expires_after 28.days if session[:remember_me]
 
     target = referer || session[:referer] || url_for(:controller => :site, :action => :index)
 
@@ -52,13 +52,15 @@ module SessionMethods
     # - If they have a block on them, show them that.
     # - If they were referred to the login, send them back there.
     # - Otherwise, send them to the home page.
-    if !user.terms_seen
-      redirect_to :controller => :users, :action => :terms, :referer => target
-    elsif user.blocked_on_view
-      redirect_to user.blocked_on_view, :referer => target
-    else
+
+
+    # if !user.terms_seen
+    #   redirect_to :controller => :users, :action => :terms, :referer => target
+    # elsif user.blocked_on_view
+    #   redirect_to user.blocked_on_view, :referer => target
+    # else
       redirect_to target
-    end
+    #end
 
     session.delete(:remember_me)
     session.delete(:referer)

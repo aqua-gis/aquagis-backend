@@ -49,16 +49,19 @@ class SessionsController < ApplicationController
   ##
   # handle password authentication
   def password_authentication(username, password)
-    Keycloak::Client.get_token(username, password)
+    
 
-    if (user = User.authenticate(:username => username, :password => password))
-      successful_login(user)
-    elsif (user = User.authenticate(:username => username, :password => password, :pending => true))
-      unconfirmed_login(user)
-    elsif User.authenticate(:username => username, :password => password, :suspended => true)
-      failed_login t("sessions.new.account is suspended", :webmaster => "mailto:#{Settings.support_email}").html_safe, username
-    else
-      failed_login t("sessions.new.auth failure"), username
-    end
+    cookies.permanent[:keycloak_token] = Keycloak::Client.get_token(username, password)
+    successful_login(User.new()) if Keycloak::Client.user_signed_in?
+
+    # if (user = User.authenticate(:username => username, :password => password))
+    #   successful_login(user)
+    # elsif (user = User.authenticate(:username => username, :password => password, :pending => true))
+    #   unconfirmed_login(user)
+    # elsif User.authenticate(:username => username, :password => password, :suspended => true)
+    #   failed_login t("sessions.new.account is suspended", :webmaster => "mailto:#{Settings.support_email}").html_safe, username
+    # else
+    #   failed_login t("sessions.new.auth failure"), username
+    # end
   end
 end
