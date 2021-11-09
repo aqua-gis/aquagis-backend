@@ -120,7 +120,6 @@ class UsersController < ApplicationController
 
   def account
     @tokens = current_user.oauth_tokens.authorized
-
     append_content_security_policy_directives(
       :form_action => %w[accounts.google.com *.facebook.com login.live.com github.com meta.wikimedia.org]
     )

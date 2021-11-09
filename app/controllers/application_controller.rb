@@ -48,13 +48,14 @@ class ApplicationController < ActionController::Base
   end
 
   def authorize_web
-
     access = Keycloak::Client.user_signed_in?('', '', '', "https://keycloak.aquagis.bg/auth/realms/master/protocol/openid-connect/token/introspect") || keycloak_controller? || new_use?
     redirect_to login_path unless access
     if access
+      @user = JSON.parse Keycloak::Client.get_userinfo
       self.current_user = User.new()
-      self.current_user.id = 10
-      self.current_user.display_name = "ivan"
+      self.current_user.id = 1
+      self.current_user.display_name = @user['name']
+      #session[:user] = self.current_user
     end
     #access = Keycloak::Client.user_signed_in? || keycloak_controller? || new_use?
     #access = Keycloak::Client.user_signed_in?('', '', '', "introspection_endpoint") || keycloak_controller? || new_use?

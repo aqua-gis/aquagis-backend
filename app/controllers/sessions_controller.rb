@@ -26,22 +26,23 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    flash[:success] = 'See you later' if Keycloak::Client.logout
+    redirect_to root_path
     @title = t "sessions.destroy.title"
-
-    if request.post?
-      if session[:token]
-        token = UserToken.find_by(:token => session[:token])
-        token&.destroy
-        session.delete(:token)
-      end
-      session.delete(:user)
-      session_expires_automatically
-      if params[:referer]
-        redirect_to safe_referer(params[:referer])
-      else
-        redirect_to :controller => "site", :action => "index"
-      end
-    end
+    # if request.post?
+    #   if session[:token]
+    #     token = UserToken.find_by(:token => session[:token])
+    #     token&.destroy
+    #     session.delete(:token)
+    #   end
+    #   session.delete(:user)
+    #   session_expires_automatically
+    #   if params[:referer]
+    #     redirect_to safe_referer(params[:referer])
+    #   else
+    #     redirect_to :controller => "site", :action => "index"
+    #   end
+    #end
   end
 
   private
@@ -49,8 +50,6 @@ class SessionsController < ApplicationController
   ##
   # handle password authentication
   def password_authentication(username, password)
-    
-
     cookies.permanent[:keycloak_token] = Keycloak::Client.get_token(username, password)
     successful_login(User.new()) if Keycloak::Client.user_signed_in?
 
