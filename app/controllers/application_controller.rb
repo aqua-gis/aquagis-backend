@@ -55,46 +55,9 @@ class ApplicationController < ActionController::Base
       self.current_user = User.new()
       self.current_user.id = 1
       self.current_user.display_name = @user['name']
-      #session[:user] = self.current_user
+      session[:user] = self.current_user
     end
-    #access = Keycloak::Client.user_signed_in? || keycloak_controller? || new_use?
-    #access = Keycloak::Client.user_signed_in?('', '', '', "introspection_endpoint") || keycloak_controller? || new_use?
-    #redirect_to login_path unless access
-    #if params[:referer]
-    #  redirect_to :controller => "users", :action => "terms", :referer => params[:referer]
-    #else
-    #  redirect_to :controller => "users", :action => "terms", :referer => request.fullpath
-    #end
-    
-    # if session[:user]
-    #   self.current_user = User.where(:id => session[:user]).where("status IN ('active', 'confirmed', 'suspended')").first
 
-    #   if session[:fingerprint] &&
-    #      session[:fingerprint] != current_user.fingerprint
-    #     reset_session
-    #     self.current_user = nil
-    #   elsif current_user.status == "suspended"
-    #     session.delete(:user)
-    #     session_expires_automatically
-
-    #     redirect_to :controller => "users", :action => "suspended"
-
-    #   # don't allow access to any auth-requiring part of the site unless
-    #   # the new CTs have been seen (and accept/decline chosen).
-    #   elsif !current_user.terms_seen && flash[:skip_terms].nil?
-    #     flash[:notice] = t "users.terms.you need to accept or decline"
-    #     if params[:referer]
-    #       redirect_to :controller => "users", :action => "terms", :referer => params[:referer]
-    #     else
-    #       redirect_to :controller => "users", :action => "terms", :referer => request.fullpath
-    #     end
-    #   end
-    # elsif session[:token]
-    #   session[:user] = current_user.id if self.current_user = User.authenticate(:token => session[:token])
-    # end
-
-    # session[:fingerprint] = current_user.fingerprint if current_user && session[:fingerprint].nil?
-  
   
   rescue StandardError => e
     logger.info("Exception authorizing user: #{e}")
