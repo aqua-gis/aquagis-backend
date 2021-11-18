@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
   end
 
   def user_signed_in?
-    access = Keycloak::Client.user_signed_in?('', '', '', "https://keycloak.aquagis.bg/auth/realms/master/protocol/openid-connect/token/introspect") || keycloak_controller? || new_use?
+    access = Keycloak::Client.user_signed_in? || keycloak_controller? || new_use?
     redirect_to login_path unless access
   end
 
@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
   end
 
   def authorize_web
-    access = Keycloak::Client.user_signed_in?('', '', '', "https://keycloak.aquagis.bg/auth/realms/master/protocol/openid-connect/token/introspect") || keycloak_controller? || new_use?
+    access = Keycloak::Client.user_signed_in? || keycloak_controller? || new_use?
     redirect_to login_path unless access
     if access
       @user = JSON.parse Keycloak::Client.get_userinfo
@@ -57,8 +57,6 @@ class ApplicationController < ActionController::Base
       self.current_user.display_name = @user['name']
       session[:user] = self.current_user
     end
-
-  
   rescue StandardError => e
     logger.info("Exception authorizing user: #{e}")
     reset_session
