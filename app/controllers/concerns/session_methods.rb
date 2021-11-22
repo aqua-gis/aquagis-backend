@@ -40,10 +40,10 @@ module SessionMethods
   ##
   # process a successful login
   def successful_login(user, referer = nil)
+    logger.info("--> @@@@@@@@@@ successful_login")
     session[:user] = user.id
-    #session[:fingerprint] = user.fingerprint
-    #session_expires_after 28.days if session[:remember_me]
-
+    session[:fingerprint] = user.fingerprint
+    session_expires_after 28.days if session[:remember_me]
     target = referer || session[:referer] || url_for(:controller => :site, :action => :index)
 
     # The user is logged in, so decide where to send them:

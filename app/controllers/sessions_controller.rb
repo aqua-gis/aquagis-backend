@@ -41,7 +41,9 @@ class SessionsController < ApplicationController
     if (user = User.authenticate(:username => username, :password => password))
        successful_login(user)
     elsif(Keycloak::Client.user_signed_in?)
+      
       @user = JSON.parse Keycloak::Client.get_userinfo
+      logger.info(@user)
       user = User.new(
         :email => username,
         :status => "active",
@@ -50,7 +52,9 @@ class SessionsController < ApplicationController
         :data_public => 1,
         :description => "desc"
       )
+      logger.info("--> SAVE IN DATABASE")
       user.save!;
+      logger.info("--> SAVED SUCESS")
       successful_login(user);
      #elsif User.authenticate(:username => username, :password => password, :suspended => true)
      #  failed_login t("sessions.new.account is suspended", :webmaster => "mailto:#{Settings.support_email}").html_safe, username
