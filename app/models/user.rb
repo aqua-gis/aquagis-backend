@@ -121,6 +121,7 @@ class User < ApplicationRecord
   end
 
   def self.authenticate(options)
+    logger.info("--->self.authenticate \n")
     if options[:username] && options[:password]
       user = find_by("email = ? OR display_name = ?", options[:username].strip, options[:username])
 
@@ -131,12 +132,14 @@ class User < ApplicationRecord
       end
 
       if user
+        logger.info("--->USER Exist \n")
         # && PasswordHash.check(user.pass_crypt, user.pass_salt, options[:password]
         if PasswordHash.upgrade?(user.pass_crypt, user.pass_salt)
           user.pass_crypt, user.pass_salt = PasswordHash.create(options[:password])
           user.save
         end
       else
+        logger.info("--->USER MISSING IN DB \n")
         user = nil
       end
     elsif options[:token]
