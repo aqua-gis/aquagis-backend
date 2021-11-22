@@ -38,10 +38,14 @@ class SessionsController < ApplicationController
   def password_authentication(username, password)
     cookies.permanent[:keycloak_token] = Keycloak::Client.get_token(username, password)
     logger.info("--->auth by database")
-    if (user = User.authenticate(:username => username, :password => password))
-       successful_login(user)
+    user = User.authenticate(:username => username, :password => password)
+    logger.info("--->RESULT FORM DB ")
+    logger.info(user)
+    if (user)
+      logger.info("--->successful IN DB")
+      successful_login(user)
     elsif(Keycloak::Client.user_signed_in?)
-      
+      logger.info("--->CREATE IN DB")
       @user = JSON.parse Keycloak::Client.get_userinfo
       logger.info(@user)
       user = User.new(
@@ -59,6 +63,7 @@ class SessionsController < ApplicationController
      #elsif User.authenticate(:username => username, :password => password, :suspended => true)
      #  failed_login t("sessions.new.account is suspended", :webmaster => "mailto:#{Settings.support_email}").html_safe, username
      else
+      logger.info("--->failure IN DB")
        failed_login t("sessions.new.auth failure"), username
      end
   end
