@@ -37,18 +37,16 @@ class SessionsController < ApplicationController
   # handle password authentication
   def password_authentication(username, password)
     cookies.permanent[:keycloak_token] = Keycloak::Client.get_token(username, password)
-    
-
-     if (user = User.authenticate(:username => username, :password => password))
+    if (user = User.authenticate(:username => username, :password => password))
        successful_login(user)
      #elsif (user = User.authenticate(:username => username, :password => password, :pending => true))
-     elsif(Keycloak::Client.user_signed_in?)
-     #unconfirmed_login(user)
+    elsif(Keycloak::Client.user_signed_in?)
+      @user = JSON.parse Keycloak::Client.get_userinfo
       user = User.new(
         :email => username,
         :status => "active",
         :pass_crypt => Digest::MD5.hexdigest("password"),
-        :display_name => username,
+        :display_name => @user['name'],
         :data_public => 1,
         :description => "desc"
       )

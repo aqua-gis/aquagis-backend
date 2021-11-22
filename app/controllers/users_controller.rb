@@ -170,6 +170,7 @@ class UsersController < ApplicationController
         redirect_to :controller => "site", :action => "index"
       end
     elsif params.key?(:auth_provider) && params.key?(:auth_uid)
+      
       self.current_user = User.new(:email => params[:email],
                                    :email_confirmation => params[:email],
                                    :display_name => params[:nickname],
