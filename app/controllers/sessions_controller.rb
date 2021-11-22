@@ -45,7 +45,7 @@ class SessionsController < ApplicationController
       user = User.new(
         :email => username,
         :status => "active",
-        :pass_crypt => Digest::MD5.hexdigest("password"),
+        :pass_crypt => Digest::MD5.hexdigest(password),
         :display_name => @user['name'],
         :data_public => 1,
         :description => "desc"
