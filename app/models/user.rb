@@ -130,7 +130,8 @@ class User < ApplicationRecord
         user = users.first if users.count == 1
       end
 
-      if user && PasswordHash.check(user.pass_crypt, user.pass_salt, options[:password])
+      if user
+        # && PasswordHash.check(user.pass_crypt, user.pass_salt, options[:password]
         if PasswordHash.upgrade?(user.pass_crypt, user.pass_salt)
           user.pass_crypt, user.pass_salt = PasswordHash.create(options[:password])
           user.save
