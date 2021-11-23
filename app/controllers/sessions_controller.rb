@@ -36,7 +36,10 @@ class SessionsController < ApplicationController
   ##
   # handle password authentication
   def password_authentication(username, password)
+    logger.info("--->request to keycloak")
     cookies.permanent[:keycloak_token] = Keycloak::Client.get_token(username, password)
+    logger.info("--->keycloak token ")
+    logger.info(cookies.permanent[:keycloak_token])
     logger.info("--->auth by database")
     user = User.authenticate(:username => username, :password => password)
     logger.info("--->RESULT FORM DB ")
@@ -44,7 +47,7 @@ class SessionsController < ApplicationController
     if (user)
       logger.info("--->successful IN DB")
       successful_login(user)
-    elsif(Keycloak::Client.user_signed_in?)
+    elsif(Keycloak::Client.user_signed_in?('', '', '', "https://keycloak.aquagis.bg/auth/realms/master/protocol/openid-connect/token/introspect"))
       logger.info("--->CREATE IN DB")
       @user = JSON.parse Keycloak::Client.get_userinfo
       logger.info(@user)
@@ -63,7 +66,7 @@ class SessionsController < ApplicationController
      #elsif User.authenticate(:username => username, :password => password, :suspended => true)
      #  failed_login t("sessions.new.account is suspended", :webmaster => "mailto:#{Settings.support_email}").html_safe, username
      else
-      logger.info("--->failure IN DB")
+      logger.info("--->failure IN keycloak user_signed_in")
        failed_login t("sessions.new.auth failure"), username
      end
   end
