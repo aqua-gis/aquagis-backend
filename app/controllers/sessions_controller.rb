@@ -11,6 +11,14 @@ class SessionsController < ApplicationController
 
   authorize_resource :class => false
 
+  def initialize
+    if File.exists?(Keycloak.installation_file)
+      @keycloak_installation = JSON File.read(Keycloak.installation_file)
+      @keycloak_introspect = @keycloak_installation['token_introspection_endpoint'];
+    end  
+    super
+  end
+
   def new
     append_content_security_policy_directives(
       :form_action => %w[*]
@@ -47,7 +55,7 @@ class SessionsController < ApplicationController
     if (user)
       logger.info("--->successful IN DB")
       successful_login(user)
-    elsif(Keycloak::Client.user_signed_in?('', '', '', "https://keycloak.aquagis.bg/auth/realms/master/protocol/openid-connect/token/introspect"))
+    elsif(Keycloak::Client.user_signed_in?('', '', '', @keycloak_introspect))
       logger.info("--->CREATE IN DB")
       @user = JSON.parse Keycloak::Client.get_userinfo
       logger.info(@user)

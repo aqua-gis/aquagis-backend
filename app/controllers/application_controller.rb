@@ -28,12 +28,15 @@ class ApplicationController < ActionController::Base
     Keycloak.proc_cookie_token = lambda do
       cookies.permanent[:keycloak_token]
     end
-
+    if File.exists?(Keycloak.installation_file)
+      @keycloak_installation = JSON File.read(Keycloak.installation_file)
+      @keycloak_introspect = @keycloak_installation['token_introspection_endpoint'];
+    end  
     super
   end
 
   def user_signed_in?
-    access = Keycloak::Client.user_signed_in?('','','',"https://keycloak.aquagis.bg/auth/realms/master/protocol/openid-connect/token/introspect") || keycloak_controller? || new_use?
+    access = Keycloak::Client.user_signed_in?('','','',@keycloak_introspect) || keycloak_controller? || new_use?
     redirect_to login_path unless access
   end
 
