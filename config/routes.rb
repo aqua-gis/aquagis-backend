@@ -154,7 +154,7 @@ OpenStreetMap::Application.routes.draw do
   get "/query" => "browse#query"
   #get "/user/new" => "users#new"
   #post "/user/new" => "users#create"
-  #get "/user/terms" => "users#terms"
+  get "/user/terms" => "users#terms"
   #post "/user/save" => "users#save"
   get "/user/:display_name/confirm/resend" => "confirmations#confirm_resend", :as => :user_confirm_resend
   match "/user/:display_name/confirm" => "confirmations#confirm", :via => [:get, :post]
@@ -163,7 +163,7 @@ OpenStreetMap::Application.routes.draw do
   post "/user/go_public" => "users#go_public"
   #match "/user/reset-password" => "passwords#reset_password", :via => [:get, :post], :as => :user_reset_password
   #match "/user/forgot-password" => "passwords#lost_password", :via => [:get, :post], :as => :user_forgot_password
-  get "/user/suspended" => "users#suspended"
+  #get "/user/suspended" => "users#suspended"
 
   get "/index.html", :to => redirect(:path => "/")
   #get "/create-account.html", :to => redirect(:path => "/user/new")

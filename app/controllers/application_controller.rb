@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   check_authorization
 
   #before_action :fetch_body
-  before_action :user_signed_in?
+  #before_action :user_signed_in?
   around_action :better_errors_allow_inline, :if => proc { Rails.env.development? }
 
   attr_accessor :current_user, :oauth_token
