@@ -177,23 +177,33 @@ class UsersController < ApplicationController
                                    :auth_provider => params[:auth_provider],
                                    :auth_uid => params[:auth_uid])
 
+      self.current_user.status = "confirmed"
+      self.current_user.tou_agreed = Time.now.getutc
+      self.current_user.terms_agreed = Time.now.getutc
+      self.current_user.terms_seen = true
+
       flash.now[:notice] = render_to_string :partial => "auth_association"
     else
       check_signup_allowed
 
       self.current_user = User.new
+      self.current_user.status = "confirmed"
+      self.current_user.tou_agreed = Time.now.getutc
+      self.current_user.terms_agreed = Time.now.getutc
+      self.current_user.terms_seen = true
     end
   end
 
   def create
     self.current_user = User.new(user_params)
+    self.current_user.status = "confirmed"
 
     if check_signup_allowed(current_user.email)
       session[:referer] = safe_referer(params[:referer]) if params[:referer]
 
       Rails.logger.info "create: #{session[:referer]}"
 
-      current_user.status = "pending"
+      current_user.status = "confirmed"
 
       if current_user.auth_provider.present? && current_user.pass_crypt.empty?
         # We are creating an account with external authentication and

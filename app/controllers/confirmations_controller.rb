@@ -80,6 +80,10 @@ class ConfirmationsController < ApplicationController
         current_user.email = current_user.new_email
         current_user.new_email = nil
         current_user.email_valid = true
+        current_user.tou_agreed = Time.now.getutc
+        current_user.terms_agreed = Time.now.getutc
+        current_user.terms_seen = true
+        
         gravatar_enabled = gravatar_enable(current_user)
         if current_user.save
           flash[:notice] = if gravatar_enabled
