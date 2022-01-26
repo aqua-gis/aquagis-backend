@@ -44,21 +44,21 @@ class SessionsController < ApplicationController
   ##
   # handle password authentication
   def password_authentication(username, password)
-    logger.info("--->request to keycloak")
+    #logger.info("--->request to keycloak")
     cookies.permanent[:keycloak_token] = Keycloak::Client.get_token(username, password)
-    logger.info("--->keycloak token ")
-    logger.info(cookies.permanent[:keycloak_token])
-    logger.info("--->auth by database")
+    #logger.info("--->keycloak token ")
+    #logger.info(cookies.permanent[:keycloak_token])
+    #logger.info("--->auth by database")
     user = User.authenticate(:username => username, :password => password)
-    logger.info("--->RESULT FORM DB ")
-    logger.info(user)
+    #logger.info("--->RESULT FORM DB ")
+    #logger.info(user)
     if (user)
-      logger.info("--->successful IN DB")
+      #logger.info("--->successful IN DB")
       successful_login(user)
     elsif(Keycloak::Client.user_signed_in?('', '', '', @keycloak_introspect))
-      logger.info("--->CREATE IN DB")
+      #logger.info("--->CREATE IN DB")
       @user = JSON.parse Keycloak::Client.get_userinfo
-      logger.info(@user)
+      #logger.info(@user)
       user = User.new(
         :email => username,
         :status => "active",
@@ -67,6 +67,11 @@ class SessionsController < ApplicationController
         :data_public => 1,
         :description => "desc"
       )
+      user.status = "confirmed"
+      user.tou_agreed = Time.now.getutc
+      user.terms_agreed = Time.now.getutc
+      user.terms_seen = true
+
       logger.info("--> SAVE IN DATABASE")
       user.save!;
       logger.info("--> SAVED SUCESS")
