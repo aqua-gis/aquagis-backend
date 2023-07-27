@@ -16,6 +16,7 @@ services:
     ports:
       - "3000:3000"
     command: bash -x /root/onboot.sh > /root/crontab.log 2>&1
+    restart: always
 
 volumes:
   web-traces:
