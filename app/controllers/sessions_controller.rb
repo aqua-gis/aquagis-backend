@@ -11,6 +11,14 @@ class SessionsController < ApplicationController
 
   authorize_resource :class => false
 
+  def initialize
+    if File.exists?(Keycloak.installation_file)
+      @keycloak_installation = JSON File.read(Keycloak.installation_file)
+      @keycloak_introspect = @keycloak_installation['token_introspection_endpoint'];
+    end  
+    super
+  end
+
   def new
     append_content_security_policy_directives(
       :form_action => %w[*]
@@ -26,22 +34,9 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    flash[:success] = 'See you later' if Keycloak::Client.logout
+    redirect_to root_path
     @title = t "sessions.destroy.title"
-
-    if request.post?
-      if session[:token]
-        token = UserToken.find_by(:token => session[:token])
-        token&.destroy
-        session.delete(:token)
-      end
-      session.delete(:user)
-      session_expires_automatically
-      if params[:referer]
-        redirect_to safe_referer(params[:referer])
-      else
-        redirect_to :controller => "site", :action => "index"
-      end
-    end
   end
 
   private
@@ -49,14 +44,43 @@ class SessionsController < ApplicationController
   ##
   # handle password authentication
   def password_authentication(username, password)
-    if (user = User.authenticate(:username => username, :password => password))
+    #logger.info("--->request to keycloak")
+    cookies.permanent[:keycloak_token] = Keycloak::Client.get_token(username, password)
+    #logger.info("--->keycloak token ")
+    #logger.info(cookies.permanent[:keycloak_token])
+    #logger.info("--->auth by database")
+    user = User.authenticate(:username => username, :password => password)
+    #logger.info("--->RESULT FORM DB ")
+    #logger.info(user)
+    if (user)
+      #logger.info("--->successful IN DB")
       successful_login(user)
-    elsif (user = User.authenticate(:username => username, :password => password, :pending => true))
-      unconfirmed_login(user)
-    elsif User.authenticate(:username => username, :password => password, :suspended => true)
-      failed_login t("sessions.new.account is suspended", :webmaster => "mailto:#{Settings.support_email}").html_safe, username
-    else
-      failed_login t("sessions.new.auth failure"), username
-    end
+    elsif(Keycloak::Client.user_signed_in?('', '', '', @keycloak_introspect))
+      #logger.info("--->CREATE IN DB")
+      @user = JSON.parse Keycloak::Client.get_userinfo
+      #logger.info(@user)
+      user = User.new(
+        :email => username,
+        :status => "active",
+        :pass_crypt => Digest::MD5.hexdigest(password),
+        :display_name => @user['name'],
+        :data_public => 1,
+        :description => "desc"
+      )
+      user.status = "confirmed"
+      user.tou_agreed = Time.now.getutc
+      user.terms_agreed = Time.now.getutc
+      user.terms_seen = true
+
+      logger.info("--> SAVE IN DATABASE")
+      user.save!;
+      logger.info("--> SAVED SUCESS")
+      successful_login(user);
+     #elsif User.authenticate(:username => username, :password => password, :suspended => true)
+     #  failed_login t("sessions.new.account is suspended", :webmaster => "mailto:#{Settings.support_email}").html_safe, username
+     else
+      logger.info("--->failure IN keycloak user_signed_in")
+       failed_login t("sessions.new.auth failure"), username
+     end
   end
 end

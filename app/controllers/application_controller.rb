@@ -3,14 +3,15 @@ class ApplicationController < ActionController::Base
 
   include SessionPersistence
 
-  protect_from_forgery :with => :exception
+  #protect_from_forgery :with => :exception
 
   add_flash_types :warning, :error
 
   rescue_from CanCan::AccessDenied, :with => :deny_access
   check_authorization
 
-  before_action :fetch_body
+  #before_action :fetch_body
+  #before_action :user_signed_in?
   around_action :better_errors_allow_inline, :if => proc { Rails.env.development? }
 
   attr_accessor :current_user, :oauth_token
@@ -19,7 +20,35 @@ class ApplicationController < ActionController::Base
   helper_method :oauth_token
   helper_method :preferred_langauges
 
+  protect_from_forgery with: :exception
+  
+
+
+  def initialize
+    Keycloak.proc_cookie_token = lambda do
+      cookies.permanent[:keycloak_token]
+    end
+    if File.exists?(Keycloak.installation_file)
+      @keycloak_installation = JSON File.read(Keycloak.installation_file)
+      @keycloak_introspect = @keycloak_installation['token_introspection_endpoint'];
+    end  
+    super
+  end
+
+  def user_signed_in?
+    access = Keycloak::Client.user_signed_in?('','','',@keycloak_introspect) || keycloak_controller? || new_use?
+    redirect_to login_path unless access
+  end
+
   private
+
+  def keycloak_controller?
+    Keycloak.keycloak_controller == controller_name
+  end
+
+  def new_use?
+    controller_name == 'users' && (action_name == "new" || action_name == "create")
+  end
 
   def authorize_web
     if session[:user]
@@ -37,23 +66,19 @@ class ApplicationController < ActionController::Base
 
       # don't allow access to any auth-requiring part of the site unless
       # the new CTs have been seen (and accept/decline chosen).
-      elsif !current_user.terms_seen && flash[:skip_terms].nil?
-        flash[:notice] = t "users.terms.you need to accept or decline"
-        if params[:referer]
-          redirect_to :controller => "users", :action => "terms", :referer => params[:referer]
-        else
-          redirect_to :controller => "users", :action => "terms", :referer => request.fullpath
-        end
-      end
+      # elsif !current_user.terms_seen && flash[:skip_terms].nil?
+      #   flash[:notice] = t "users.terms.you need to accept or decline"
+      #   if params[:referer]
+      #     redirect_to :controller => "users", :action => "terms", :referer => params[:referer]
+      #   else
+      #     redirect_to :controller => "users", :action => "terms", :referer => request.fullpath
+      #   end
+      # end
     elsif session[:token]
       session[:user] = current_user.id if self.current_user = User.authenticate(:token => session[:token])
     end
 
     session[:fingerprint] = current_user.fingerprint if current_user && session[:fingerprint].nil?
-  rescue StandardError => e
-    logger.info("Exception authorizing user: #{e}")
-    reset_session
-    self.current_user = nil
   end
 
   def require_user

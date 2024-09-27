@@ -94,18 +94,18 @@
             <%= t("users.show.my messages") %>
             <span class='count-number'><%= number_with_delimiter(current_user.new_messages.size) %></span>
           <% end %>
-          <%= link_to t("users.show.my profile"), user_path(current_user), :class => "dropdown-item" %>
+        <!--   <%= link_to t("users.show.my profile"), user_path(current_user), :class => "dropdown-item" %> -->
           <%= link_to t("users.show.my settings"), { :controller => "users", :action => "account", :display_name => current_user.display_name }, { :class => "dropdown-item" } %>
+
           <div class="dropdown-divider"></div>
           <%= yield :greeting %>
           <%= link_to t("layouts.logout"), logout_path(:referer => request.fullpath), :method => "post", :class => "geolink dropdown-item" %>
         </div>
       </div>
     <% else %>
-      <div class="d-inline-flex btn-group login-menu" role="">
+        <div class="d-inline-flex btn-group login-menu" role="">
         <%= link_to t("layouts.log_in"), login_path(:referer => request.fullpath), :class => "geolink btn btn-outline-secondary" %>
-        <%= link_to t("layouts.sign_up"), user_new_path, :class => "btn btn-outline-secondary" %>
-      </ul>
+      </div>
     <% end %>
   </nav>
 </header>

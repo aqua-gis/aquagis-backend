@@ -119,6 +119,9 @@ gem "aws-sdk-s3"
 # Used to resize user images
 gem "image_processing"
 
+#keyclock
+gem 'keycloak'
+
 # Gems useful for development
 group :development do
   gem "annotate"

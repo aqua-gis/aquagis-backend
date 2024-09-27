@@ -60,7 +60,7 @@ OpenStreetMap::Application.routes.draw do
     get "trackpoints" => "api/tracepoints#index"
 
     get "user/:id" => "api/users#show", :id => /\d+/, :as => :api_user
-    get "user/details" => "api/users#details"
+    #get "user/details" => "api/users#details"
     get "user/gpx_files" => "api/users#gpx_files"
     get "users" => "api/users#index", :as => :api_users
 
@@ -152,22 +152,22 @@ OpenStreetMap::Application.routes.draw do
   get "/key" => "site#key"
   get "/id" => "site#id"
   get "/query" => "browse#query"
-  get "/user/new" => "users#new"
-  post "/user/new" => "users#create"
+  #get "/user/new" => "users#new"
+  #post "/user/new" => "users#create"
   get "/user/terms" => "users#terms"
-  post "/user/save" => "users#save"
+  #post "/user/save" => "users#save"
   get "/user/:display_name/confirm/resend" => "confirmations#confirm_resend", :as => :user_confirm_resend
   match "/user/:display_name/confirm" => "confirmations#confirm", :via => [:get, :post]
-  match "/user/confirm" => "confirmations#confirm", :via => [:get, :post]
-  match "/user/confirm-email" => "confirmations#confirm_email", :via => [:get, :post]
+  #match "/user/confirm" => "confirmations#confirm", :via => [:get, :post]
+  #match "/user/confirm-email" => "confirmations#confirm_email", :via => [:get, :post]
   post "/user/go_public" => "users#go_public"
-  match "/user/reset-password" => "passwords#reset_password", :via => [:get, :post], :as => :user_reset_password
-  match "/user/forgot-password" => "passwords#lost_password", :via => [:get, :post], :as => :user_forgot_password
-  get "/user/suspended" => "users#suspended"
+  #match "/user/reset-password" => "passwords#reset_password", :via => [:get, :post], :as => :user_reset_password
+  #match "/user/forgot-password" => "passwords#lost_password", :via => [:get, :post], :as => :user_forgot_password
+  #get "/user/suspended" => "users#suspended"
 
   get "/index.html", :to => redirect(:path => "/")
-  get "/create-account.html", :to => redirect(:path => "/user/new")
-  get "/forgot-password.html", :to => redirect(:path => "/user/forgot-password")
+  #get "/create-account.html", :to => redirect(:path => "/user/new")
+  #get "/forgot-password.html", :to => redirect(:path => "/user/forgot-password")
 
   # omniauth
   get "/auth/failure" => "users#auth_failure"
@@ -232,7 +232,7 @@ OpenStreetMap::Application.routes.draw do
   # user pages
   resources :users, :path => "user", :param => :display_name, :only => [:show, :destroy]
   match "/user/:display_name/account" => "users#account", :via => [:get, :post], :as => "user_account"
-  post "/user/:display_name/set_status" => "users#set_status", :as => :set_status_user
+  #post "/user/:display_name/set_status" => "users#set_status", :as => :set_status_user
 
   # friendships
   match "/user/:display_name/make_friend" => "friendships#make_friend", :via => [:get, :post], :as => "make_friend"
@@ -276,21 +276,21 @@ OpenStreetMap::Application.routes.draw do
   scope "/user/:display_name" do
     resources :oauth_clients
   end
-  match "/oauth/revoke" => "oauth#revoke", :via => [:get, :post]
-  match "/oauth/authorize" => "oauth#authorize", :via => [:get, :post], :as => :authorize
-  get "/oauth/token" => "oauth#token", :as => :token
-  match "/oauth/request_token" => "oauth#request_token", :via => [:get, :post], :as => :request_token
-  match "/oauth/access_token" => "oauth#access_token", :via => [:get, :post], :as => :access_token
-  get "/oauth/test_request" => "oauth#test_request", :as => :test_request
+  #match "/oauth/revoke" => "oauth#revoke", :via => [:get, :post]
+  #match "/oauth/authorize" => "oauth#authorize", :via => [:get, :post], :as => :authorize
+  #get "/oauth/token" => "oauth#token", :as => :token
+  #match "/oauth/request_token" => "oauth#request_token", :via => [:get, :post], :as => :request_token
+  #match "/oauth/access_token" => "oauth#access_token", :via => [:get, :post], :as => :access_token
+  #get "/oauth/test_request" => "oauth#test_request", :as => :test_request
 
   # roles and banning pages
-  post "/user/:display_name/role/:role/grant" => "user_roles#grant", :as => "grant_role"
-  post "/user/:display_name/role/:role/revoke" => "user_roles#revoke", :as => "revoke_role"
-  get "/user/:display_name/blocks" => "user_blocks#blocks_on", :as => "user_blocks_on"
-  get "/user/:display_name/blocks_by" => "user_blocks#blocks_by", :as => "user_blocks_by"
-  get "/blocks/new/:display_name" => "user_blocks#new", :as => "new_user_block"
-  resources :user_blocks
-  match "/blocks/:id/revoke" => "user_blocks#revoke", :via => [:get, :post], :as => "revoke_user_block"
+  #post "/user/:display_name/role/:role/grant" => "user_roles#grant", :as => "grant_role"
+  #post "/user/:display_name/role/:role/revoke" => "user_roles#revoke", :as => "revoke_role"
+  #get "/user/:display_name/blocks" => "user_blocks#blocks_on", :as => "user_blocks_on"
+  #get "/user/:display_name/blocks_by" => "user_blocks#blocks_by", :as => "user_blocks_by"
+  #get "/blocks/new/:display_name" => "user_blocks#new", :as => "new_user_block"
+  #resources :user_blocks
+  #match "/blocks/:id/revoke" => "user_blocks#revoke", :via => [:get, :post], :as => "revoke_user_block"
 
   # issues and reports
   resources :issues do

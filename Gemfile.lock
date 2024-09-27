@@ -151,6 +151,8 @@ GEM
       activerecord (>= 3.0, < 6.2)
       delayed_job (>= 3.0, < 5)
     docile (1.4.0)
+    domain_name (0.5.20190701)
+      unf (>= 0.0.5, < 1.0.0)
     dry-configurable (0.12.1)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.5, >= 0.5.0)
@@ -230,6 +232,9 @@ GEM
     hashie (4.1.0)
     html_tokenizer (0.0.7)
     htmlentities (4.3.4)
+    http-accept (1.7.0)
+    http-cookie (1.0.4)
+      domain_name (~> 0.5)
     http_accept_language (2.1.1)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
@@ -259,6 +264,10 @@ GEM
       thor (>= 0.14, < 2.0)
     json (2.5.1)
     jwt (2.2.3)
+    keycloak (3.0.0)
+      json
+      jwt
+      rest-client
     kgio (2.11.4)
     kramdown (2.3.1)
       rexml
@@ -277,6 +286,9 @@ GEM
     marcel (1.0.1)
     maxminddb (0.1.22)
     method_source (1.0.0)
+    mime-types (3.3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2021.0901)
     mini_magick (4.11.0)
     mini_mime (1.0.3)
     mini_portile2 (2.5.3)
@@ -285,6 +297,7 @@ GEM
     multi_json (1.15.0)
     multi_xml (0.6.0)
     multipart-post (2.1.1)
+    netrc (0.11.0)
     nio4r (2.5.7)
     nokogiri (1.11.7)
       mini_portile2 (~> 2.5.0)
@@ -400,6 +413,11 @@ GEM
     regexp_parser (2.1.1)
     request_store (1.5.0)
       rack (>= 1.4)
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rexml (3.2.5)
     rinku (2.0.6)
     rotp (6.2.0)
@@ -470,6 +488,9 @@ GEM
       concurrent-ruby (~> 1.0)
     uglifier (4.2.0)
       execjs (>= 0.3.0, < 3)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.8)
     unicode-display_width (2.0.0)
     validates_email_format_of (1.6.3)
       i18n
@@ -525,6 +546,7 @@ DEPENDENCIES
   jbuilder (~> 2.7)
   jquery-rails
   json
+  keycloak
   kgio
   kramdown
   libxml-ruby (>= 2.0.5)
@@ -572,4 +594,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.1.4
+   2.2.30
