@@ -37,8 +37,10 @@ RUN apt-get update \
  #   Install our PGP key and add HTTPS support for APT
 RUN apt-get install -y dirmngr gnupg
 # RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
-COPY docker/passenger-ubuntu-key.txt /app/passenger-ubuntu-key.txt
-RUN apt-key add /app/passenger-ubuntu-key.txt
+#COPY docker/passenger-ubuntu-key.txt /app/passenger-ubuntu-key.txt
+RUN apt-get install -y dirmngr gnupg apt-transport-https ca-certificates \
+ && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys D870AB033FB45BD1
+#RUN apt-key add /app/passenger-ubuntu-key.txt
 RUN apt-get install -y apt-transport-https ca-certificates
 
 # Add our APT repository
@@ -62,7 +64,7 @@ RUN mkdir /var/run/passenger-instreg
 
 
 # Install bundler
-RUN gem2.7 install bundler
+RUN gem2.7 install bundler -v 2.4.22
 
 ENV DEBIAN_FRONTEND=dialog
 
